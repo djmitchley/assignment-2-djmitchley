@@ -31,6 +31,18 @@ def getWordCount(fname) :
 ## 1. Write a function that prompts the user to input a filename, calls the getWordCount function, and
 ## then prints the 20 most common words in that text, not counting stopwords.
 
+fname = "hamlet.txt"
+
+
+def getMostCommonWords(fname) :
+    wc = getWordCount(fname)
+    wordList = []
+    for word in wc:
+        wordList.append((wc[word],word))
+    wordList.sort(reverse=True)
+    return wordList [:20]
+
+
 ## Our wordCount dictionary is an example of a data structure known as a histogram. We can use this to represent
 ## the probability of a particular word occurring in our source document.
 ### For example, if there are 100 total words (including duplicates), and the word 'cat' occurs 11 times, we can conclude
@@ -38,6 +50,23 @@ def getWordCount(fname) :
 
 ### 2. Write a function called wordProbability that takes as input a word and a histogram (as created above) and returns the
 ### probability of that word occurring. If the word is not in the histogram, return 0.
+
+wc = getWordCount(fname)
+def wordProbability(word, wordCount) :
+    if word not in wordCount :
+        return 0
+    else:
+        wordFrequency = wordCount[word]
+    total = 0
+    for item in wordCount:
+        total = total + wordCount[item]
+        if word in wordCount :
+            probability = wordFrequency / total
+        return probability
+
+## new label
+wc2 = wordProbability(word, wordCount)
+
 
 ### Now that we know how to do this, we can randomly select words based on their probability.
 ### To begin, let's remember how to generate a random number.
@@ -50,11 +79,26 @@ val = random.random()
 ### Add the probability of the current word (which you implemented in question #2) to the total. If it's less than
 ### val, keep going. If it's greater than val, return the current word.
 
-## 3. Write a function called getRandomWord that takes as input a histogram and returns a random word, based on this approach.
+## 3. Write a function called getRandomWord that takes as input a histogram and returns a random word, based on this approach.import random
 
+def getRandomWord(histogram) :
+    histogramList = list(histogram.keys())
+    randomWord = random.choice(list(wc.keys()))
+    return randomWord
+
+## new label to make it make results easier to read
+wc3 = getRandomWord(histogram)
+
+## us wc for input in getRandomWord(wc)
 
 ### 4. Now that we have this, we could try to generate random text. Write a function called randomSentence that takes a histogram as
 ### input and randomly chooses 10 words, with the probability based on their frequency in the histogram.
+
+def getRandomSentence(wc) :
+    return random.choices(list(wc.keys()), wc.values(), k=10)
+
+## new label to make it make results easier to read
+wc4 = getRandomSentence(wc)
 
 ### This probably doesn't look much like a sentence. There's a reason for this. Sentences have a sequential structure - the likelihood of
 ### a word occurring depends on what came before it. Our previous code did not take this into consideration. We were assuming
@@ -87,6 +131,16 @@ def getMarkovWordCount(fname) :
 ###  5. So let's tweak our code above to write a helper function called getHistogram. It should take as input a list
 ### of words, such as ['now', 'is', 'the', 'time'] and return a dictionary with the word's count in that list.
 
+ListOfWords = ['now', 'is', 'the', 'time']
+
+def getHistogram(ListOfWords) :
+    hist= {}
+    for item in ListOfWords :
+        if item in hist:
+            hist[item] += 1
+        else:
+            hist[item] = 1
+    return hist
 
 ### Once we have this, we can build a tool that converts the dictionary that getMarkovWordCount created to one that
 ### maps a dictionary onto another dictionary - this tells us, for a given word, the frequency of all the words that
@@ -112,4 +166,13 @@ def buildMarkovHistogram(markovWordCount) :
 ### (this is basically the approach that your phone uses with predictive texting.)
 
 
+def MarkovHistogram(fname, start) :
+    markovHist = getMarkovWordCount(fname)
+    markovHistogram = buildMarkovHistogram(markovHist)
+    for i in range(15) :
+        firstWord = markovHistogram[start]
+        nextWord = getRandomWord(firstWord)
+        start = nextWord
+        print(nextWord)
 
+## start would be a word from one of the texts. From hamlet.txt in this case
